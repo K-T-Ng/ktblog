@@ -1,0 +1,16 @@
+# IDE
+.idea/
+.vscode/
+
+# Node / Astro
+node_modules/
+dist/
+.astro/
+
+# Go
+/api/bin/
+
+# Env and logs
+.env*
+!.env.example
+*.log
