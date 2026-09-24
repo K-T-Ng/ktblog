@@ -2,6 +2,4 @@
 
 Roadmap, design notes and architecture decisions.
 
-## Goals / What I'm learning
-
-TODO
+- [ROADMAP.md](ROADMAP.md): goals, milestones, and tech stack
