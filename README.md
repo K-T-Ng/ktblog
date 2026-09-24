@@ -14,10 +14,10 @@ Personal blog for learning frontend, backend, databases, and deployment.
 
 ## Tech Stack
 
-- **Frontend:** Astro + TypeScript
-- **Backend:** Go
-- **Database:** TBD
-- **Deployment:** TBD
+- **Frontend:** Astro + TypeScript, Tailwind CSS, React islands
+- **Backend:** Go (Gin)
+- **Database:** PostgreSQL
+- **Deployment:** Cloudflare Pages (web), VPS + Caddy (api), Docker Compose + GitHub Actions
 
 ## Getting Started
 
@@ -25,4 +25,4 @@ TODO: prerequisites (Go and Node versions) and how to run `web/` and `api/` loca
 
 ## Roadmap
 
-See [docs/](docs/README.md).
+See [docs/ROADMAP.md](docs/ROADMAP.md).
