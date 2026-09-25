@@ -1,7 +1,30 @@
 ---
+import { getCollection } from "astro:content";
 import BaseLayout from '../layouts/BaseLayout.astro'
+import FormattedDate from "../components/FormattedDate.astro";
+
+const posts = await getCollection("posts");
+const sortedPosts = posts.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
 ---
 
-<BaseLayout title="Hello World">
-    <h1>Hello World</h1>
+<BaseLayout title="KT's Blog">
+    <h1>KT's Blog</h1>
+    <p>I'm a backend developer learning everything else. This blog is both the notes
+        and the project: I'm building it from scratch — frontend, backend, databases,
+        and deployment — one milestone at a time.</p>
+
+    <h2>Posts</h2>
+    <ul>
+        {
+            sortedPosts.map(
+                (post) => (
+                    <li>
+                        <a href=`/posts/${post.id}/`>
+                            { post.data.title }
+                        </a> (<FormattedDate date={post.data.pubDate}></FormattedDate>)
+                    </li>
+                )
+            )
+        }
+    </ul>
 </BaseLayout>

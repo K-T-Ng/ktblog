@@ -1,6 +1,7 @@
 ---
 import { getCollection, render } from 'astro:content';
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import FormattedDate from "../../components/FormattedDate.astro";
 
 export async function getStaticPaths() {
     const posts = await getCollection("posts")
@@ -21,13 +22,7 @@ const { Content } = await render(post);
 <BaseLayout title={ post.data.title }>
     <h1>{ post.data.title }</h1>
     <p>
-        Published date:
-        <time datetime={ post.data.pubDate.toISOString() }>
-            {
-                post.data.pubDate.toLocaleDateString("zh-TW", {timeZone: "UTC"})
-            }
-        </time>
+        Published date: <FormattedDate date={ post.data.pubDate }></FormattedDate>
     </p>
-
     <Content />
 </BaseLayout>
