@@ -23,7 +23,7 @@ const { Content } = await render(post);
     <p>
         Published date: <time datetime={ post.data.pubDate.toISOString() }>
             {
-                post.data.pubDate.toLocaleDateString("zh-TW", {timeZone: "UTC"})
+                post.data.pubDate.toLocaleDateString("en-GB", {timeZone: "UTC"})
             }
         </time>
     </p>
