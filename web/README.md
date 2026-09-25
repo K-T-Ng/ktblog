@@ -4,8 +4,11 @@ The blog's frontend, built with Astro and TypeScript.
 
 ## Prerequisites
 
-TODO: Node version and package manager.
+Node 24 + npm
 
 ## Run locally
 
-TODO
+```bash
+npm install
+npm run dev
+```
