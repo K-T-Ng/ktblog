@@ -7,22 +7,6 @@ interface Props {
 const { title } = Astro.props;
 ---
 
-<style>
-    header {
-        border-bottom: 1px solid;
-    }
-
-    header a {
-        font-weight: bold;
-        text-decoration: none;
-    }
-
-    footer {
-        font-size: 0.875rem;
-        color: rgba(0, 0, 0, 0.5);
-    }
-</style>
-
 <html lang="en">
     <head>
         <meta charset="utf-8" />
@@ -32,16 +16,16 @@ const { title } = Astro.props;
         <meta name="generator" content={Astro.generator} />
         <title>{ title }</title>
     </head>
-    <body>
-        <header>
-            <div class="container">
+    <body class="leading-relaxed">
+        <header class="border-b font-bold">
+            <div class="mx-auto max-w-prose px-6">
                 <a href="/">KT's Blog</a>
             </div>
         </header>
-        <main class="container">
+        <main class="mx-auto my-3 max-w-prose px-6">
             <slot />
         </main>
-        <footer class="container">
+        <footer class="mx-auto max-w-prose px-6 text-sm text-gray-600">
             <p>&copy; { new Date().getFullYear() } K-T-Ng</p>
         </footer>
     </body>
