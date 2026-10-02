@@ -1,6 +1,7 @@
 ---
 title: What I Learned Building a Static Blog, Part 1
 pubDate: 2026-09-26
+tags: ["astro", "cloudflare", "node-js"]
 ---
 
 > Who this is for: backend developers with no frontend experience.

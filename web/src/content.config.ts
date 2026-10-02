@@ -7,6 +7,13 @@ const posts = defineCollection({
     schema: z.object({
         title: z.string(),
         pubDate: z.coerce.date(),
+        tags: z.array(z.enum(["astro", "cloudflare", "node-js"]))
+            .default([])
+            .refine(
+                (tags) => tags.length === new Set(tags).size, {
+                    error: "Duplicate tags are not allowed."
+                }
+            ),
     }),
 });
 

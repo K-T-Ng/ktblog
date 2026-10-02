@@ -1,0 +1,36 @@
+---
+import {type CollectionEntry, getCollection} from "astro:content";
+import PostList from "../../components/PostList.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+export async function getStaticPaths() {
+    const posts = await getCollection("posts");
+    const sortedPosts = posts.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+
+    const tagPostsMap: Map<string, CollectionEntry<"posts">[]> = new Map();
+    for (const post of sortedPosts) {
+        for (const tag of post.data.tags) {
+            let tagPosts = tagPostsMap.get(tag);
+            if (tagPosts === undefined) {
+                tagPosts = [];
+                tagPostsMap.set(tag, tagPosts);
+            }
+            tagPosts.push(post);
+        }
+    }
+
+    return Array.from(tagPostsMap, ([tag, posts]) => (
+        {
+            params: { tag },
+            props: { tag, posts },
+        }
+    ))
+}
+
+const { tag, posts } = Astro.props;
+---
+
+<BaseLayout title=`Posts tagged "${ tag }"`>
+    <h1 class="text-3xl my-5 font-bold">Posts tagged "{ tag }"</h1>
+    <PostList posts={ posts } />
+</BaseLayout>

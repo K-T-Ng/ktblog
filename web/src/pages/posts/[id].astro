@@ -25,6 +25,24 @@ const { Content } = await render(post);
         <p>
             Published date: <FormattedDate date={ post.data.pubDate }></FormattedDate>
         </p>
+        {
+            post.data.tags.length > 0 && (
+                <div class="not-prose flex flex-wrap gap-2">
+                    <span>
+                        Tags:
+                    </span>
+                    <ul class="flex flex-wrap gap-2">
+                        {
+                            post.data.tags.map((tag) =>
+                                <li>
+                                    <a class="rounded bg-gray-200 px-2 text-sm hover:bg-gray-400" href=`/tags/${tag}/`>#{tag}</a>
+                                </li>
+                            )
+                        }
+                    </ul>
+                </div>
+            )
+        }
         <Content />
     </article>
 </BaseLayout>
