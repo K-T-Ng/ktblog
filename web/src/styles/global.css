@@ -1,2 +1,17 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
+
+.astro-code {
+    background-color: var(--color-gray-100) !important;
+}
+
+.astro-code,
+.astro-code span {
+    @variant dark {
+        color: var(--shiki-dark) !important;
+        background-color: var(--shiki-dark-bg) !important;
+        font-style: var(--shiki-dark-font-style) !important;
+        font-weight: var(--shiki-dark-font-weight) !important;
+        text-decoration: var(--shiki-dark-text-decoration) !important;
+    }
+}
