@@ -7,7 +7,7 @@ interface Props {
 const { title } = Astro.props;
 ---
 
-<html lang="en">
+<html lang="en" class="scheme-light-dark">
     <head>
         <meta charset="utf-8" />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -16,7 +16,7 @@ const { title } = Astro.props;
         <meta name="generator" content={Astro.generator} />
         <title>{ title }</title>
     </head>
-    <body class="leading-relaxed">
+    <body class="leading-relaxed bg-white text-gray-900 dark:bg-gray-900 dark:text-white">
         <header class="border-b font-bold">
             <div class="mx-auto max-w-prose px-6">
                 <a href="/">KT's Blog</a>
@@ -25,7 +25,7 @@ const { title } = Astro.props;
         <main class="mx-auto my-3 max-w-prose px-6">
             <slot />
         </main>
-        <footer class="mx-auto max-w-prose px-6 text-sm text-gray-600">
+        <footer class="mx-auto max-w-prose px-6 text-sm text-gray-600 dark:text-gray-400">
             <p>&copy; { new Date().getFullYear() } K-T-Ng</p>
         </footer>
     </body>
