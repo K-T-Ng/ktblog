@@ -1,0 +1,25 @@
+<button hidden type="button" role="switch" id="theme-toggle-button" class="flex items-center rounded gap-2">
+    <span>Dark mode</span>
+    <span aria-hidden="true" class="flex items-center rounded-full w-12 h-5 border bg-gray-200 dark:bg-gray-700 px-0.5">
+        <span class="rounded-full size-4 bg-gray-700 dark:bg-gray-200 transition-transform motion-reduce:transition-none dark:translate-x-6.5"></span>
+    </span>
+</button>
+
+<script>
+    const htmlElement = document.documentElement;
+    const buttonElement = document.getElementById("theme-toggle-button");
+
+    if (!buttonElement) {
+        throw new Error("No element found for theme-toggle-button");
+    }
+
+    buttonElement.ariaChecked = String(htmlElement.classList.contains("dark"));
+    buttonElement.addEventListener("click", () => {
+        const isDarkMode: boolean = htmlElement.classList.toggle("dark");
+        buttonElement.ariaChecked = String(isDarkMode);
+        try {
+            localStorage.setItem("theme", isDarkMode ? "dark" : "light");
+        } catch {} // For the case when local storage is blocked
+    });
+    buttonElement.hidden = false;
+</script>
