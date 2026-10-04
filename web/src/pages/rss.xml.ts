@@ -8,6 +8,7 @@ export async function GET(context: APIContext) {
     if (site === undefined) {
         throw new Error("No site configured for RSS.");
     }
+    const feedUrl = new URL("rss.xml", site);
 
     const posts = await getCollection("posts");
     const sortedPosts = sortByPubDateDesc(posts);
@@ -15,6 +16,10 @@ export async function GET(context: APIContext) {
         title: "KT's Blog",
         description: "Notes from building this blog from scratch: the problems I solved and the techniques I want to try next.",
         site: site,
+        xmlns: {
+            atom: "http://www.w3.org/2005/Atom",
+        },
+        customData: `<language>en</language><atom:link href="${ feedUrl }" rel="self" type="application/rss+xml" />`,
         items: sortedPosts.map((post) => ({
             title: post.data.title,
             pubDate: post.data.pubDate,
