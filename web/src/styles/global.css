@@ -5,6 +5,8 @@
     background-color: var(--color-gray-100) !important;
 }
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 .astro-code,
 .astro-code span {
     @variant dark {
