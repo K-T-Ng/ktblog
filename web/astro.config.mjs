@@ -15,5 +15,6 @@ export default defineConfig({
         dark: 'github-dark-default',
       }
     }
-  }
+  },
+  site: "https://ktblog.dev"
 });
