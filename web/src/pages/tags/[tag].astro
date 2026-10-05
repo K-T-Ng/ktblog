@@ -1,6 +1,7 @@
 ---
 import {type CollectionEntry, getCollection} from "astro:content";
 import { sortByPubDateDesc } from "../../utils/posts.ts";
+import { SITE_NAME } from "../../utils/site.ts";
 import PostList from "../../components/PostList.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 
@@ -31,7 +32,7 @@ export async function getStaticPaths() {
 const { tag, posts } = Astro.props;
 ---
 
-<BaseLayout title=`Posts tagged "${ tag }"`>
+<BaseLayout title=`Posts tagged "${ tag }"` description=`Posts tagged ${tag} on ${ SITE_NAME }, newest first.` ogType="website">
     <h1 class="text-3xl my-5 font-bold">Posts tagged "{ tag }"</h1>
     <PostList posts={ posts } />
 </BaseLayout>
