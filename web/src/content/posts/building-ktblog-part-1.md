@@ -1,6 +1,7 @@
 ---
 title: What I Learned Building a Static Blog, Part 1
 pubDate: 2026-09-26
+description: "Notes for backend developers new to frontend: building a static blog with Astro, from npm and nvm to deploying on Cloudflare Pages."
 tags: ["astro", "cloudflare", "node-js"]
 ---
 

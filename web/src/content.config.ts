@@ -7,6 +7,7 @@ const posts = defineCollection({
     schema: z.object({
         title: z.string(),
         pubDate: z.coerce.date(),
+        description: z.string(),
         tags: z.array(z.enum(["astro", "cloudflare", "node-js"]))
             .default([])
             .refine(
