@@ -17,3 +17,17 @@
         text-decoration: var(--shiki-dark-text-decoration) !important;
     }
 }
+
+/*
+ * Dark-mode colors for Pagefind's search modal.
+ * Pagefind sets its defaults on an unlayered `:root`, so this rule needs higher
+ * specificity: `@variant dark` compiles to `:where()`, which has zero specificity.
+ */
+:root.dark {
+    --pf-text: var(--color-white);
+    --pf-text-secondary: var(--color-gray-300);
+    --pf-text-muted: var(--color-gray-400);
+    --pf-background: var(--color-gray-900);
+    --pf-border: var(--color-gray-700);
+    --pf-hover: var(--color-gray-800);
+}
