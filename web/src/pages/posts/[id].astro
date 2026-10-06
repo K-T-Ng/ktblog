@@ -21,7 +21,7 @@ const { Content } = await render(post);
 
 <BaseLayout title={ post.data.title } description={ post.data.description } ogType="article">
     <article class="prose dark:prose-invert prose-a:text-blue-700 dark:prose-a:text-blue-300 [&_:not(pre)>code]:bg-gray-100 dark:[&_:not(pre)>code]:bg-gray-700 prose-headings:font-semibold prose-code:before:content-none prose-code:after:content-none [&_:not(pre)>code]:px-1 [&_:not(pre)>code]:rounded">
-        <h1>{ post.data.title }</h1>
+        <h1 data-pagefind-body>{ post.data.title }</h1>
         <p>
             Published date: <FormattedDate date={ post.data.pubDate }></FormattedDate>
         </p>
@@ -43,6 +43,8 @@ const { Content } = await render(post);
                 </div>
             )
         }
-        <Content />
+        <div data-pagefind-body>
+            <Content />
+        </div>
     </article>
 </BaseLayout>
