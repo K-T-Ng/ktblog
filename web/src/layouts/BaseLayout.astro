@@ -53,13 +53,18 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
         <meta property="og:type" content={ ogType } />
         <meta property="og:site_name" content={ SITE_NAME } />
         <meta name="twitter:card" content="summary" />
+        <link rel="stylesheet" href="/pagefind/pagefind-component-ui.css" />
+        <script type="module" src="/pagefind/pagefind-component-ui.js"></script>
         <title>{ formattedTitle }</title>
     </head>
     <body class="leading-relaxed bg-white text-gray-900 dark:bg-gray-900 dark:text-white">
+        <pagefind-modal />
         <header class="border-b font-bold">
             <div class="mx-auto max-w-prose px-6 flex items-center justify-between">
                 <a href="/">{ SITE_NAME }</a>
-                <ThemeToggle />
+                <div class="flex gap-3 items-center">
+                    <pagefind-modal-trigger /> <ThemeToggle />
+                </div>
             </div>
         </header>
         <main class="mx-auto my-3 max-w-prose px-6">
