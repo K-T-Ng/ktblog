@@ -8,7 +8,7 @@ const posts = defineCollection({
         title: z.string(),
         pubDate: z.coerce.date(),
         description: z.string(),
-        tags: z.array(z.enum(["astro", "cloudflare", "node-js"]))
+        tags: z.array(z.enum(["astro", "cloudflare", "node-js", "tailwind"]))
             .default([])
             .refine(
                 (tags) => tags.length === new Set(tags).size, {
