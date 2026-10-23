@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"sync"
 	"testing"
+	"time"
 
 	"github.com/K-T-Ng/ktblog/api/internal/posts"
 )
@@ -16,6 +17,7 @@ type fakePosts struct {
 	mu     sync.Mutex
 	status int
 	body   string
+	hits   int
 }
 
 func (f *fakePosts) set(status int, body string) {
@@ -25,9 +27,16 @@ func (f *fakePosts) set(status int, body string) {
 	f.body = body
 }
 
+func (f *fakePosts) hitCount() int {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	return f.hits
+}
+
 func (f *fakePosts) ServeHTTP(w http.ResponseWriter, _ *http.Request) {
 	f.mu.Lock()
 	defer f.mu.Unlock()
+	f.hits++
 	w.WriteHeader(f.status)
 	if _, err := w.Write([]byte(f.body)); err != nil {
 		log.Printf("failed to write fakePosts response: %v", err)
@@ -175,5 +184,74 @@ func TestRefreshUnreachable(t *testing.T) {
 	// Act & Assert
 	if err := al.Refresh(context.Background()); err == nil {
 		t.Errorf("expected error non-nil when unreachable")
+	}
+}
+
+func TestRunRefreshesUntilCancelled(t *testing.T) {
+	// Arrange
+	fake, srv := newFakeServer(t, http.StatusOK, `{"slugs": ["a"]}`)
+	a := posts.NewAllowlist(srv.URL, &http.Client{})
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	done := make(chan struct{})
+
+	// Act 1: Launch go routine to update allow list
+	go func() {
+		a.Run(ctx, 50*time.Millisecond)
+		close(done)
+	}()
+
+	// Act 2: Ensure allow list update at least twice
+	timeCtx, timeCancel := context.WithTimeout(ctx, 2*time.Second)
+	defer timeCancel()
+
+	ticker := time.NewTicker(10 * time.Millisecond)
+	defer ticker.Stop()
+
+	for fake.hitCount() < 2 {
+		select {
+		case <-timeCtx.Done():
+			t.Fatalf("expected allow list update at least twice within 2 seconds")
+		case <-ticker.C:
+		}
+	}
+
+	// Act 3: Cancel the context, stop allow list update
+	cancel()
+
+	// Assert
+	select {
+	case <-done:
+	case <-time.After(1 * time.Second):
+		t.Fatalf("allow list still running after cancel")
+	}
+}
+
+func TestRunReturnsOnCancelBeforeTick(t *testing.T) {
+	// Arrange
+	_, srv := newFakeServer(t, http.StatusOK, `{"slugs": ["a"]}`)
+	a := posts.NewAllowlist(srv.URL, &http.Client{})
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	done := make(chan struct{})
+
+	// Act 1: Launch go routine to update allow list
+	go func() {
+		a.Run(ctx, 1*time.Hour)
+		close(done)
+	}()
+
+	// Act 2: Cancel the context, stop allow list update
+	cancel()
+
+	// Assert
+	select {
+	case <-done:
+	case <-time.After(1 * time.Second):
+		t.Fatalf("allow list still running after cancel")
 	}
 }

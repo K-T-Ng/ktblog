@@ -4,11 +4,13 @@ package posts
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"sync"
+	"time"
 )
 
 // Allowlist is the set of known post slugs, refreshed from posts.json.
@@ -90,4 +92,25 @@ func (a *Allowlist) Refresh(ctx context.Context) error {
 	defer a.mu.Unlock()
 	a.slugs = newSlug
 	return nil
+}
+
+// Run refreshes the allowlist every interval until ctx is canceled.
+// It does not refresh immediately, so call Refresh once before starting it.
+// Refresh errors are logged, and the loop keeps running.
+func (a *Allowlist) Run(ctx context.Context, interval time.Duration) {
+	ticker := time.NewTicker(interval)
+	defer ticker.Stop()
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-ticker.C:
+			if err := a.Refresh(ctx); err != nil {
+				if errors.Is(err, context.Canceled) {
+					return
+				}
+				log.Printf("refresh allowlist: %v", err)
+			}
+		}
+	}
 }

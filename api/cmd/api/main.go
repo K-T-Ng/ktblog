@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/K-T-Ng/ktblog/api/internal/httpapi"
+	"github.com/K-T-Ng/ktblog/api/internal/posts"
 )
 
 func main() {
@@ -22,6 +23,13 @@ func main() {
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
+
+	client := &http.Client{Timeout: 10 * time.Second}
+	allowlist := posts.NewAllowlist(cfg.PostsURL, client)
+	if err := allowlist.Refresh(ctx); err != nil {
+		log.Fatalf("initial posts.json fetch: %v", err)
+	}
+	go allowlist.Run(ctx, cfg.RefreshInterval)
 
 	srv := &http.Server{
 		Addr:              cfg.Addr,
