@@ -13,6 +13,7 @@ import (
 
 	"github.com/K-T-Ng/ktblog/api/internal/httpapi"
 	"github.com/K-T-Ng/ktblog/api/internal/posts"
+	"github.com/K-T-Ng/ktblog/api/internal/stats"
 )
 
 func main() {
@@ -33,7 +34,7 @@ func main() {
 
 	srv := &http.Server{
 		Addr:              cfg.Addr,
-		Handler:           httpapi.NewHandler(),
+		Handler:           httpapi.NewHandler(httpapi.Deps{Stats: stats.NewStore(), Allowlist: allowlist}),
 		ReadHeaderTimeout: 5 * time.Second,
 		ReadTimeout:       10 * time.Second,
 		WriteTimeout:      10 * time.Second,
