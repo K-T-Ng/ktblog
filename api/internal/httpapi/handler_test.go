@@ -18,17 +18,21 @@ func (f fakeAllowlist) Contains(slug string) bool {
 	return f[slug]
 }
 
-func newTestHandler() http.Handler {
+func newTestHandler(allowedOrigins []string) http.Handler {
 	return httpapi.NewHandler(httpapi.Deps{
-		Stats:     stats.NewStore(),
-		Allowlist: fakeAllowlist{"hello": true},
+		Stats:          stats.NewStore(),
+		Allowlist:      fakeAllowlist{"hello": true},
+		AllowedOrigins: allowedOrigins,
 	})
 }
 
-func do(t *testing.T, h http.Handler, method, path string) *httptest.ResponseRecorder {
+func do(t *testing.T, h http.Handler, method, path string, headers map[string]string) *httptest.ResponseRecorder {
 	t.Helper()
 	rec := httptest.NewRecorder()
 	req := httptest.NewRequest(method, path, nil)
+	for key, value := range headers {
+		req.Header.Set(key, value)
+	}
 	h.ServeHTTP(rec, req)
 	return rec
 }
@@ -95,10 +99,10 @@ func assertAIPError(t *testing.T, rec *httptest.ResponseRecorder, wantCode int, 
 
 func TestHealthz(t *testing.T) {
 	// Arrange
-	handler := newTestHandler()
+	handler := newTestHandler(nil)
 
 	// Act
-	rec := do(t, handler, http.MethodGet, "/healthz")
+	rec := do(t, handler, http.MethodGet, "/healthz", nil)
 
 	// Assert
 	assertHTTPStatus(t, rec, http.StatusOK)
@@ -119,10 +123,10 @@ func TestHealthz(t *testing.T) {
 
 func TestHealthzWrongMethod(t *testing.T) {
 	// Arrange
-	handler := newTestHandler()
+	handler := newTestHandler(nil)
 
 	// Act
-	rec := do(t, handler, http.MethodPost, "/healthz")
+	rec := do(t, handler, http.MethodPost, "/healthz", nil)
 
 	// Assert
 	if rec.Code != http.StatusMethodNotAllowed {
@@ -132,11 +136,11 @@ func TestHealthzWrongMethod(t *testing.T) {
 
 func TestView(t *testing.T) {
 	// Arrange
-	handler := newTestHandler()
+	handler := newTestHandler(nil)
 
 	// Act
-	do(t, handler, http.MethodPost, "/v1/posts/hello:view")
-	rec := do(t, handler, http.MethodPost, "/v1/posts/hello:view")
+	do(t, handler, http.MethodPost, "/v1/posts/hello:view", nil)
+	rec := do(t, handler, http.MethodPost, "/v1/posts/hello:view", nil)
 
 	// Assert
 	assertCounts(t, rec, map[string]int64{"views": 2, "likes": 0})
@@ -144,12 +148,12 @@ func TestView(t *testing.T) {
 
 func TestLikeUnlike(t *testing.T) {
 	// Arrange
-	handler := newTestHandler()
+	handler := newTestHandler(nil)
 
 	// Act
-	do(t, handler, http.MethodPost, "/v1/posts/hello:like")
-	do(t, handler, http.MethodPost, "/v1/posts/hello:like")
-	rec := do(t, handler, http.MethodPost, "/v1/posts/hello:unlike")
+	do(t, handler, http.MethodPost, "/v1/posts/hello:like", nil)
+	do(t, handler, http.MethodPost, "/v1/posts/hello:like", nil)
+	rec := do(t, handler, http.MethodPost, "/v1/posts/hello:unlike", nil)
 
 	// Assert
 	assertCounts(t, rec, map[string]int64{"views": 0, "likes": 1})
@@ -157,10 +161,10 @@ func TestLikeUnlike(t *testing.T) {
 
 func TestUnlikeAtZero(t *testing.T) {
 	// Arrange
-	handler := newTestHandler()
+	handler := newTestHandler(nil)
 
 	// Act
-	rec := do(t, handler, http.MethodPost, "/v1/posts/hello:unlike")
+	rec := do(t, handler, http.MethodPost, "/v1/posts/hello:unlike", nil)
 
 	// Assert
 	assertCounts(t, rec, map[string]int64{"views": 0, "likes": 0})
@@ -168,10 +172,10 @@ func TestUnlikeAtZero(t *testing.T) {
 
 func TestUnknownSlug(t *testing.T) {
 	// Arrange
-	handler := newTestHandler()
+	handler := newTestHandler(nil)
 
 	// Act
-	rec := do(t, handler, http.MethodPost, "/v1/posts/nope:view")
+	rec := do(t, handler, http.MethodPost, "/v1/posts/nope:view", nil)
 
 	// Assert
 	assertAIPError(t, rec, http.StatusNotFound, "NOT_FOUND")
@@ -179,10 +183,10 @@ func TestUnknownSlug(t *testing.T) {
 
 func TestUnknownMethod(t *testing.T) {
 	// Arrange
-	handler := newTestHandler()
+	handler := newTestHandler(nil)
 
 	// Act
-	rec := do(t, handler, http.MethodPost, "/v1/posts/hello:nope")
+	rec := do(t, handler, http.MethodPost, "/v1/posts/hello:nope", nil)
 
 	// Assert
 	assertAIPError(t, rec, http.StatusNotFound, "NOT_FOUND")
@@ -190,10 +194,10 @@ func TestUnknownMethod(t *testing.T) {
 
 func TestNoMethod(t *testing.T) {
 	// Arrange
-	handler := newTestHandler()
+	handler := newTestHandler(nil)
 
 	// Act
-	rec := do(t, handler, http.MethodPost, "/v1/posts/hello")
+	rec := do(t, handler, http.MethodPost, "/v1/posts/hello", nil)
 
 	// Assert
 	assertAIPError(t, rec, http.StatusNotFound, "NOT_FOUND")
@@ -201,10 +205,10 @@ func TestNoMethod(t *testing.T) {
 
 func TestWrongHTTPMethod(t *testing.T) {
 	// Arrange
-	handler := newTestHandler()
+	handler := newTestHandler(nil)
 
 	// Act
-	rec := do(t, handler, http.MethodGet, "/v1/posts/hello:like")
+	rec := do(t, handler, http.MethodGet, "/v1/posts/hello:like", nil)
 
 	// Assert
 	assertHTTPStatus(t, rec, http.StatusMethodNotAllowed)
@@ -212,10 +216,10 @@ func TestWrongHTTPMethod(t *testing.T) {
 
 func TestUnknownPath(t *testing.T) {
 	// Arrange
-	handler := newTestHandler()
+	handler := newTestHandler(nil)
 
 	// Act
-	rec := do(t, handler, http.MethodPost, "/nope")
+	rec := do(t, handler, http.MethodPost, "/nope", nil)
 
 	// Assert
 	assertHTTPStatus(t, rec, http.StatusNotFound)
@@ -223,11 +227,11 @@ func TestUnknownPath(t *testing.T) {
 
 func TestBadRequestsDontCount(t *testing.T) {
 	// Arrange
-	handler := newTestHandler()
+	handler := newTestHandler(nil)
 
 	// Act
-	do(t, handler, http.MethodPost, "/v1/posts/hello:dance")
-	rec := do(t, handler, http.MethodPost, "/v1/posts/hello:view")
+	do(t, handler, http.MethodPost, "/v1/posts/hello:dance", nil)
+	rec := do(t, handler, http.MethodPost, "/v1/posts/hello:view", nil)
 
 	// Assert
 	assertCounts(t, rec, map[string]int64{"views": 1, "likes": 0})
