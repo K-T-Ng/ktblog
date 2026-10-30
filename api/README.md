@@ -12,12 +12,16 @@ Go 1.27 or later.
 go run ./cmd/api
 ```
 
-Optional environment variables:
-```shell
-ADDR=127.0.0.1:8080                       # Address to listen on (host:port)
-POSTS_URL=https://ktblog.dev/posts.json   # Where to fetch post slugs; use http://localhost:4321/posts.json for local dev
-REFRESH_INTERVAL=10m                      # How often to refetch post slugs
-```
+All configuration is through environment variables, and all are optional:
+
+| Variable           | Default                         | Purpose                                                                                                                   |
+|--------------------|---------------------------------|---------------------------------------------------------------------------------------------------------------------------|
+| `ADDR`             | `127.0.0.1:8080`                | Address to listen on (host:port)                                                                                          |
+| `ALLOWED_ORIGINS`  | `http://localhost:4321`         | Comma-separated origins allowed to call the API from a browser (CORS). Each is `scheme://host[:port]`, no trailing slash. |
+| `POSTS_URL`        | `https://ktblog.dev/posts.json` | Where to fetch post slugs                                                                                                 |
+| `REFRESH_INTERVAL` | `10m`                           | How often to refetch post slugs                                                                                           |
+
+For local development with the site running (`npm run dev`), set `POSTS_URL=http://localhost:4321/posts.json`.
 
 ## Test
 
