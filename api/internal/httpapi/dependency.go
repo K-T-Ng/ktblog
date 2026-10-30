@@ -17,6 +17,7 @@ type Allowlist interface {
 
 // Deps holds the dependencies of the handler returned by NewHandler.
 type Deps struct {
-	Stats     Stats
-	Allowlist Allowlist
+	Stats          Stats
+	Allowlist      Allowlist
+	AllowedOrigins []string
 }

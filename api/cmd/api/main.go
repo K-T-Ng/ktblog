@@ -33,8 +33,14 @@ func main() {
 	go allowlist.Run(ctx, cfg.RefreshInterval)
 
 	srv := &http.Server{
-		Addr:              cfg.Addr,
-		Handler:           httpapi.NewHandler(httpapi.Deps{Stats: stats.NewStore(), Allowlist: allowlist}),
+		Addr: cfg.Addr,
+		Handler: httpapi.NewHandler(
+			httpapi.Deps{
+				Stats:          stats.NewStore(),
+				Allowlist:      allowlist,
+				AllowedOrigins: cfg.AllowedOrigins,
+			},
+		),
 		ReadHeaderTimeout: 5 * time.Second,
 		ReadTimeout:       10 * time.Second,
 		WriteTimeout:      10 * time.Second,

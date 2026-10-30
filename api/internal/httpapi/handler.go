@@ -12,7 +12,7 @@ func NewHandler(d Deps) http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /healthz", healthHandler)
 	mux.HandleFunc("POST /v1/posts/{name}", postHandler(d))
-	return mux
+	return cors(d.AllowedOrigins, mux)
 }
 
 func healthHandler(w http.ResponseWriter, r *http.Request) {
