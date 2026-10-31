@@ -1,32 +1,30 @@
 package httpapi
 
 import (
-	"fmt"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
-// cors wraps next with CORS headers for the allowed origins.
-// It answers preflight requests itself with 204 and never passes them to next.
-func cors(allowed []string, next http.Handler) http.Handler {
+// cors returns middleware that sets CORS headers for the allowed origins.
+// It answers preflight requests itself with 204 and aborts the chain.
+func cors(allowed []string) gin.HandlerFunc {
 	allowedOrigins := make(map[string]bool)
 	for _, origin := range allowed {
 		allowedOrigins[origin] = true
 	}
 
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Add("Vary", "Origin")
-		origin := r.Header.Get("Origin")
-		fmt.Println(origin, allowedOrigins)
+	return func(c *gin.Context) {
+		c.Writer.Header().Add("Vary", "Origin")
+		origin := c.GetHeader("Origin")
 		if allowedOrigins[origin] {
-			w.Header().Set("Access-Control-Allow-Origin", origin)
+			c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
 		}
 
-		if r.Method == http.MethodOptions && r.Header.Get("Access-Control-Request-Method") != "" {
-			w.Header().Set("Access-Control-Allow-Methods", "POST")
-			w.Header().Set("Access-Control-Max-Age", "7200") // Chromium preflight cache maximum
-			w.WriteHeader(http.StatusNoContent)
-			return
+		if c.Request.Method == http.MethodOptions && c.GetHeader("Access-Control-Request-Method") != "" {
+			c.Writer.Header().Set("Access-Control-Allow-Methods", "POST")
+			c.Writer.Header().Set("Access-Control-Max-Age", "7200") // Chromium preflight cache maximum
+			c.AbortWithStatus(http.StatusNoContent)
 		}
-		next.ServeHTTP(w, r)
-	})
+	}
 }
